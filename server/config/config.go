@@ -104,6 +104,27 @@ func init() {
 	Config.SaltBytes = Config.SaltBytes[:24]
 
 	golog.SetLevel(utils.If(len(Config.Log.Level) == 0, `info`, Config.Log.Level))
+
+	// Override config with environment variables
+	if listen := os.Getenv("SPARK_LISTEN"); listen != "" {
+		Config.Listen = listen
+	}
+	if salt := os.Getenv("SPARK_SALT"); salt != "" {
+		Config.Salt = salt
+	}
+	if username := os.Getenv("SPARK_USERNAME"); username != "" {
+		if password := os.Getenv("SPARK_PASSWORD"); password != "" {
+			Config.Auth = map[string]string{
+				username: password,
+			}
+		}
+	}
+	if logLevel := os.Getenv("SPARK_LOG_LEVEL"); logLevel != "" {
+		Config.Log.Level = logLevel
+	}
+	if logPath := os.Getenv("SPARK_LOG_PATH"); logPath != "" {
+		Config.Log.Path = logPath
+	}
 }
 
 func fatal(args map[string]any) {

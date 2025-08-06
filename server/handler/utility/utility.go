@@ -26,13 +26,19 @@ func CheckForm(ctx *gin.Context, form any) (string, bool) {
 		Conn   string `json:"uuid" yaml:"uuid" form:"uuid"`
 		Device string `json:"device" yaml:"device" form:"device"`
 	}
-	if form != nil && ctx.ShouldBind(form) != nil {
-		ctx.AbortWithStatusJSON(http.StatusBadRequest, modules.Packet{Code: -1, Msg: `${i18n|COMMON.INVALID_PARAMETER}`})
-		return ``, false
+	if form != nil {
+		if err := ctx.ShouldBind(form); err != nil {
+			ctx.AbortWithStatusJSON(http.StatusBadRequest, modules.Packet{Code: -1, Msg: `${i18n|COMMON.INVALID_PARAMETER}`})
+			return "", false
+		}
 	}
-	if ctx.ShouldBind(&base) != nil || (len(base.Conn) == 0 && len(base.Device) == 0) {
+	if err := ctx.ShouldBind(&base); err != nil {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, modules.Packet{Code: -1, Msg: `${i18n|COMMON.INVALID_PARAMETER}`})
-		return ``, false
+		return "", false
+	}
+	if len(base.Conn) == 0 && len(base.Device) == 0 {
+		ctx.AbortWithStatusJSON(http.StatusBadRequest, modules.Packet{Code: -1, Msg: `${i18n|COMMON.INVALID_PARAMETER}`})
+		return "", false
 	}
 	connUUID, ok := common.CheckDevice(base.Device, base.Conn)
 	if !ok {
