@@ -1,9 +1,8 @@
 # Stage 1: Build the frontend
 FROM node:18-alpine AS frontend
 WORKDIR /app/web
-COPY web/package.json web/package-lock.json ./
+COPY web/ ./
 RUN npm install
-COPY web ./
 RUN npm run build-prod
 
 # Stage 2: Build the server
