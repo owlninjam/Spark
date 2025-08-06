@@ -1,0 +1,10 @@
+.git
+.github
+.idea
+.vscode
+*.md
+*.log
+built/
+releases/
+web/node_modules
+web/dist
